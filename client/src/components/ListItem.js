@@ -1,10 +1,11 @@
-import TickIcon from "./TickIcon"
-import ProgressBar from "./ProgressBar"
-import Modal from "./Modal"
 import { useState } from "react"
+import TickIcon from "./TickIcon"
+import Modal from "./Modal"
+import ProgressBar from "./ProgressBar"
 
 const ListItem = ({ task, getData }) => {
   const [showModal, setShowModal] = useState(false)
+
   const deleteItem = async () => {
     try {
       const response = await fetch(
@@ -20,12 +21,13 @@ const ListItem = ({ task, getData }) => {
       console.error(err)
     }
   }
+
   return (
     <li className="list-item">
       <div className="info-container">
         <TickIcon />
         <p className="task-title">{task.title}</p>
-        <ProgressBar />
+        <ProgressBar progress={task.progress} />
       </div>
 
       <div className="button-container">

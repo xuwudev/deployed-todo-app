@@ -1,12 +1,16 @@
 import ListHeader from "./components/ListHeader"
 import ListItem from "./components/ListItem"
+import Auth from "./components/Auth"
 import { useEffect, useState } from "react"
+import { useCookies } from "react-cookie"
 
 const App = () => {
+  const [cookies, setCookie, removeCookie] = useCookies(null)
+  const authToken = cookies.AuthToken
+  const userEmail = cookies.Email
   const [tasks, setTasks] = useState(null)
 
   const getData = async () => {
-    const userEmail = "gakurocommercial@gmail.com"
     try {
       const response = await fetch(
         `${process.env.REACT_APP_SERVERURL}/todos/${userEmail}`
@@ -18,7 +22,11 @@ const App = () => {
     }
   }
 
-  useEffect(() => getData, [])
+  useEffect(() => {
+    if (authToken) {
+      getData()
+    }
+  }, [])
   console.log(tasks)
 
   //Sort by date
@@ -26,10 +34,15 @@ const App = () => {
 
   return (
     <div className="app">
-      <ListHeader listName={"Holiday Tick list"} getData={getData} />
-      {sortedTasks?.map((task) => (
-        <ListItem key={task.id} task={task} getData={getData} />
-      ))}
+      {!authToken && <Auth />}
+      {authToken && (
+        <>
+          <ListHeader listName={"Holiday Tick list"} getData={getData} />
+          {sortedTasks?.map((task) => (
+            <ListItem key={task.id} task={task} getData={getData} />
+          ))}
+        </>
+      )}
     </div>
   )
 }

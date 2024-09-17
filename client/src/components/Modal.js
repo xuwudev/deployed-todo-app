@@ -1,10 +1,12 @@
 import { useState } from "react"
+import { useCookies } from "react-cookie"
 
 const Modal = ({ mode, setShowModal, getData, task }) => {
+  const [cookies, setCookie, removeCookie] = useCookies(null)
   const editMode = mode === "edit" ? true : false
 
   const [data, setData] = useState({
-    user_email: editMode ? task.user_email : "gakurocommercial@gmail.com",
+    user_email: editMode ? task.user_email : cookies.Email,
     title: editMode ? task.title : "",
     progress: editMode ? task.progress : 50,
     date: editMode ? task.date : new Date(),
@@ -13,16 +15,12 @@ const Modal = ({ mode, setShowModal, getData, task }) => {
   const postData = async (e) => {
     e.preventDefault()
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_SERVERURL}/todos/`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        }
-      )
+      const response = await fetch(`${process.env.REACT_APP_SERVERURL}/todos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
       if (response.status === 200) {
-        console.log("worked!")
         setShowModal(false)
         getData()
       }
@@ -83,8 +81,8 @@ const Modal = ({ mode, setShowModal, getData, task }) => {
             required
             type="range"
             id="range"
-            min={0}
-            max={100}
+            min="0"
+            max="100"
             name="progress"
             value={data.progress}
             onChange={handleChange}
@@ -101,5 +99,3 @@ const Modal = ({ mode, setShowModal, getData, task }) => {
 }
 
 export default Modal
-
-// 1:48:10
